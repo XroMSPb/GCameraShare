@@ -46,7 +46,8 @@
         android:gravity="center"
         android:layout_marginTop="26dp"
         android:layout_marginHorizontal="10dp"
-        android:visibility="invisible">
+        android:visibility="gone"
+        >
 
         <EditText
             android:id="@+id/newAppName"

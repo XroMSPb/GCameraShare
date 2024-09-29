@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         val applyBtn = findViewById<Button>(R.id.apply)
         applyBtn.setOnClickListener{
             textBox.text?.toString()?.let {
-                this.title = it
+                setTitle(it)
             }
         }
     }

@@ -25,7 +25,12 @@ class LaunchConversationActivity : AppCompatActivity() {
             val shareIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_STREAM, it)
-                type = "image/*"
+                if(intent.type?.startsWith("image/") == true) {
+                    type = "image/*"
+                } else if(intent.type?.startsWith("video/") == true) {
+                    type = "video/*"
+                }
+
                 setClassName("org.telegram.messenger.web","org.telegram.ui.LaunchActivity")
             }
             startActivity(Intent.createChooser(shareIntent, "Share with"))
