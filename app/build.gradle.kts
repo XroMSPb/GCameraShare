@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.verizon.messaging.vzmsgs"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.verizon.messaging.vzmsgs"
@@ -13,6 +13,10 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     buildTypes {
@@ -40,5 +44,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }

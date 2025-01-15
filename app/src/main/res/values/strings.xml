@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">GCamera Share</string>
-    <string name="app_info">This app create for share photo from Google Camera to Telegram alternative client</string>
+    <string name="app_info">This app create for share photo from Google Camera to Telegram alternative client\nSourcecode:</string>
     <string name="link">https://github.com/XroMSPb/GCameraShare</string>
 </resources>

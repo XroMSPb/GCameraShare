@@ -2,4 +2,5 @@
 plugins {
     id("com.android.application").version("8.8.0").apply(false)
     kotlin("jvm") version "2.1.0"
+    alias(libs.plugins.kotlin.android) apply false
 }

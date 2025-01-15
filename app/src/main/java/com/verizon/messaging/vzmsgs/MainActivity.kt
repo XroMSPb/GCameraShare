@@ -3,29 +3,61 @@ package com.verizon.messaging.vzmsgs
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.verizon.Preferences
+import com.verizon.messaging.vzmsgs.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
+    private val prefs: Preferences by lazy {
+        Preferences(baseContext)
+    }
+
+    private lateinit var appSelectorLauncher: ActivityResultLauncher<Intent>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val textLink = findViewById<TextView>(R.id.link)
-        textLink.setOnClickListener {
+        setContentView(binding.root)
+        binding.link.setOnClickListener {
             val share = Intent.createChooser(Intent().apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(getString(R.string.link))
             }, null)
             startActivity(share)
         }
-        val textBox = findViewById<EditText>(R.id.newAppName)
-        val applyBtn = findViewById<Button>(R.id.apply)
-        applyBtn.setOnClickListener{
-            textBox.text?.toString()?.let {
-                setTitle(it)
+
+        appSelectorLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                val packageName = data?.getStringExtra("packageName")
+                val className = data?.getStringExtra("className")
+
+                binding.packageName.setText(packageName)
+                binding.activityName.setText(className)
             }
         }
+
+        binding.packageName.setText(prefs.getPackageName())
+        binding.activityName.setText(prefs.getActivityName())
+
+        binding.activityName.setOnClickListener {
+            startActivityForResult()
+        }
+        binding.packageName.setOnClickListener {
+            startActivityForResult()
+        }
     }
+
+    fun startActivityForResult() {
+        val intent = Intent(this, PackagesList::class.java)
+        appSelectorLauncher.launch(intent)
+    }
+
 }
