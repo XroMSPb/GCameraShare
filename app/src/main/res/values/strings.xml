@@ -2,4 +2,7 @@
     <string name="app_name">GCamera Share</string>
     <string name="app_info">This app create for share photo from Google Camera to Telegram alternative client\nSourcecode:</string>
     <string name="link">https://github.com/XroMSPb/GCameraShare</string>
+    <string name="save">Save</string>
+    <string name="settings_save">Settings saved</string>
+    <string name="reset">Reset to default</string>
 </resources>

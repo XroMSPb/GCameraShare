@@ -3,11 +3,20 @@ package com.verizon.messaging.vzmsgs
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.net.toUri
 import com.verizon.Preferences
+import com.verizon.Preferences.Companion.DEFAULT_ACTIVITY_NAME
+import com.verizon.Preferences.Companion.DEFAULT_PACKAGE_NAME
 import com.verizon.messaging.vzmsgs.databinding.ActivityMainBinding
+import com.verizon.saveImageToPrivateStorage
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding by lazy {
@@ -18,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var appSelectorLauncher: ActivityResultLauncher<Intent>
+    private var packageName: String = ""
+    private var className: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,16 +47,32 @@ class MainActivity : AppCompatActivity() {
         ) { result ->
             if (result.resultCode == RESULT_OK) {
                 val data = result.data
-                val packageName = data?.getStringExtra("packageName")
-                val className = data?.getStringExtra("className")
-
-                binding.packageName.setText(packageName)
-                binding.activityName.setText(className)
+                setPackageAndClassNames(
+                    data?.getStringExtra("packageName") ?: DEFAULT_PACKAGE_NAME,
+                    data?.getStringExtra("className") ?: DEFAULT_ACTIVITY_NAME,
+                    data?.getStringExtra("appTitle") ?: ""
+                )
             }
         }
 
-        binding.packageName.setText(prefs.getPackageName())
-        binding.activityName.setText(prefs.getActivityName())
+        binding.saveBtn.setOnClickListener {
+            savePrefs()
+        }
+        binding.reset.setOnClickListener {
+            saveImageToPrivateStorage(
+                AppCompatResources.getDrawable(
+                    baseContext,
+                    R.mipmap.ic_launcher
+                )!!.toBitmap(), baseContext
+            )
+            setPackageAndClassNames(DEFAULT_PACKAGE_NAME, DEFAULT_ACTIVITY_NAME, "Telegram")
+            savePrefs()
+        }
+
+        setPackageAndClassNames(
+            prefs.getPackageName(),
+            prefs.getActivityName()
+        )
 
         binding.activityName.setOnClickListener {
             startActivityForResult()
@@ -55,7 +82,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun startActivityForResult() {
+    private fun loadIconFile(): File {
+        val filePath =
+            File(baseContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "cache")
+        if (!filePath.exists()) {
+            filePath.mkdirs()
+        }
+        val file = File(filePath, "appIcon.webp")
+        return file
+    }
+
+    private fun savePrefs() {
+        prefs.setPackageName(packageName)
+        prefs.setActivityName(className)
+        Toast.makeText(this, R.string.settings_save, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setPackageAndClassNames(
+        packageN: String,
+        classN: String,
+        appTitle: String = "App title"
+    ) {
+        packageName = packageN
+        className = classN
+        binding.packageName.setText(packageName)
+        binding.activityName.setText(className)
+        binding.appTitle.text = appTitle
+        binding.appIcon.setImageURI(loadIconFile().toUri())
+    }
+
+    private fun startActivityForResult() {
         val intent = Intent(this, PackagesList::class.java)
         appSelectorLauncher.launch(intent)
     }
