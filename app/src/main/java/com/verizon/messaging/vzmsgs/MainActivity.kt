@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appSelectorLauncher: ActivityResultLauncher<Intent>
     private var packageName: String = ""
     private var className: String = ""
+    private var appName: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                 setPackageAndClassNames(
                     data?.getStringExtra("packageName") ?: DEFAULT_PACKAGE_NAME,
                     data?.getStringExtra("className") ?: DEFAULT_ACTIVITY_NAME,
-                    data?.getStringExtra("appTitle") ?: ""
+                    data?.getStringExtra("appTitle") ?: "NoName"
                 )
             }
         }
@@ -71,7 +72,8 @@ class MainActivity : AppCompatActivity() {
 
         setPackageAndClassNames(
             prefs.getPackageName(),
-            prefs.getActivityName()
+            prefs.getActivityName(),
+            prefs.getAppName()
         )
 
         binding.activityName.setOnClickListener {
@@ -95,6 +97,7 @@ class MainActivity : AppCompatActivity() {
     private fun savePrefs() {
         prefs.setPackageName(packageName)
         prefs.setActivityName(className)
+        prefs.setAppName(appName)
         Toast.makeText(this, R.string.settings_save, Toast.LENGTH_SHORT).show()
     }
 
@@ -105,6 +108,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         packageName = packageN
         className = classN
+        appName = appTitle
         binding.packageName.setText(packageName)
         binding.activityName.setText(className)
         binding.appTitle.text = appTitle
